@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>পোল্ট্রি রেশন ফর্মুলেশন ক্যালকুলেটর — NRC 1994</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #1a6b3c;
+  --primary-dark: #0f4526;
+  --primary-light: #2a9d5c;
+  --accent: #f4a820;
+  --accent-dark: #c8861a;
+  --danger: #c0392b;
+  --warning: #e67e22;
+  --info: #2980b9;
+  --bg: #f0f4f1;
+  --card: #ffffff;
+  --border: #c8ddd0;
+  --text: #1c2e24;
+  --text-muted: #5a7563;
+  --shadow: 0 4px 20px rgba(26,107,60,0.1);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Hind Siliguri', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--primary-light) 100%);
+  color: white;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -20%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header-logo {
+  width: 72px; height: 72px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  border: 2px solid rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.header-text h1 {
+  font-family: 'Noto Serif Bengali', serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.header-text p {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.badge-nrc {
+  background: var(--accent);
+  color: #1a1a1a;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* NAV TABS */
+.nav-tabs {
+  background: var(--primary-dark);
+  display: flex;
+  overflow-x: auto;
+  gap: 0;
+  max-width: 100%;
+}
+.nav-tab {
+  padding: 14px 22px;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-tab:hover { color: white; background: rgba(255,255,255,0.07); }
+.nav-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(255,255,255,0.05);
+}
+
+/* MAIN LAYOUT */
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.card-header {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  padding: 14px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+}
+.card-body { padding: 20px; }
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .header-text h1 { font-size: 1.3rem; }
+}
+
+/* FORM CONTROLS */
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26,107,60,0.12);
+}
+
+/* BUTTONS */
+.btn {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,107,60,0.3); }
+.btn-accent { background: var(--accent); color: #1a1a1a; }
+.btn-accent:hover { background: var(--accent-dark); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { background: #a93226; }
+.btn-sm { padding: 7px 14px; font-size: 0.82rem; }
+.btn-info { background: var(--info); color: white; }
+.btn-info:hover { background: #1f6fa8; }
+
+/* INGREDIENT TABLE */
+.ingredient-table-wrapper { overflow-x: auto; }
+.ingredient-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.ingredient-table th {
+  background: var(--primary);
+  color: white;
+  padding: 10px 10px;
+  text-align: center;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 0.78rem;
+}
+.ingredient-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e8f0ea;
+  text-align: center;
+  vertical-align: middle;
+}
+.ingredient-table tr:hover td { background: #f0f9f4; }
+.ingredient-table tr.excluded td { opacity: 0.35; text-decoration: line-through; }
+.ingredient-name-col { text-align: left !important; font-weight: 500; min-width: 160px; }
+
+/* RESULT PANEL */
+.result-panel {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.result-header {
+  background: linear-gradient(90deg, #1a3a2a 0%, var(--primary) 100%);
+  color: white;
+  padding: 16px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.result-body { background: white; padding: 20px; }
+
+/* NUTRIENT STATUS BARS */
+.nutrient-item {
+  margin-bottom: 12px;
+}
+.nutrient-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 0.83rem;
+}
+.nutrient-bar-bg {
+  height: 10px;
+  background: #e8f0ea;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.nutrient-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+.bar-ok { background: var(--primary-light); }
+.bar-low { background: var(--danger); }
+.bar-excess { background: var(--warning); }
+
+/* STAT BOXES */
+.stat-box {
+  background: linear-gradient(135deg, #f0f9f4 0%, #e0f0e8 100%);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-box .val { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+.stat-box .lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
+.stat-box.warn .val { color: var(--warning); }
+.stat-box.danger .val { color: var(--danger); }
+
+/* REQUIREMENT TABLE */
+.req-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+.req-table th {
+  background: #e8f0ea;
+  padding: 8px 10px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary-dark);
+  border-bottom: 2px solid var(--border);
+}
+.req-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #f0f4f1;
+  text-align: center;
+}
+.req-table tr:nth-child(even) td { background: #fafcfb; }
+
+/* TOGGLE SWITCH */
+.toggle-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f4f1;
+}
+.toggle-label { flex: 1; font-size: 0.87rem; font-weight: 500; }
+.toggle {
+  position: relative;
+  width: 44px; height: 24px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: #ccc;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--primary-light); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ALERTS */
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 0.88rem;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.alert-success { background: #e8f5ee; border: 1px solid #a8d5b8; color: #1a5c32; }
+.alert-warning { background: #fef3e2; border: 1px solid #f5c06a; color: #7d4e1a; }
+.alert-danger { background: #fce9e8; border: 1px solid #e8a09a; color: #7d1a1a; }
+.alert-info { background: #e8f4fb; border: 1px solid #a0c8e8; color: #1a4a6c; }
+
+/* SECTION TITLE */
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* PRINT */
+.print-btn { float: right; }
+@media print {
+  .nav-tabs, .btn, .header-logo { display: none; }
+  .tab-content { display: block !important; }
+}
+
+/* WEIGHT GAIN TABLE */
+.wg-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.wg-table th { background: var(--primary); color: white; padding: 8px 10px; }
+.wg-table td { padding: 7px 10px; border-bottom: 1px solid #e8f0ea; text-align: center; }
+.wg-table tr:hover td { background: #f5faf7; }
+
+/* FOOTER */
+.footer {
+  background: var(--primary-dark);
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+  padding: 20px;
+  font-size: 0.85rem;
+  margin-top: 40px;
+}
+.footer strong { color: var(--accent); }
+.footer a { color: var(--accent-dark); }
+
+/* HIGHLIGHT */
+.highlight { color: var(--primary); font-weight: 700; }
+.text-danger { color: var(--danger); }
+.text-warning { color: var(--warning); }
+.text-success { color: var(--primary); }
+
+/* Section sub-header */
+.sub-header {
+  background: #e8f0ea;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Range input */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%; height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.range-row { display: flex; align-items: center; gap: 12px; }
+.range-val { min-width: 48px; text-align: right; font-weight: 700; color: var(--primary); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-logo">🐔</div>
+    <div class="header-text">
+      <h1>পোল্ট্রি রেশন ফর্মুলেশন ক্যালকুলেটর</h1>
+      <p>
+        <span class="badge-nrc">NRC 1994</span>
+        Nutrient Requirements of Poultry, 9th Revised Edition — সম্পূর্ণ বাংলা পোল্ট্রি পুষ্টি ব্যবস্থাপনা সফটওয়্যার
+      </p>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showTab('tab-formulator')">🧪 রেশন ফর্মুলেটর</div>
+    <div class="nav-tab" onclick="showTab('tab-ingredients')">🌾 খাদ্য উপাদান</div>
+    <div class="nav-tab" onclick="showTab('tab-requirements')">📊 পুষ্টি চাহিদা</div>
+    <div class="nav-tab" onclick="showTab('tab-growth')">📈 বৃদ্ধি ও শরীরের ওজন</div>
+    <div class="nav-tab" onclick="showTab('tab-energy')">⚡ শক্তি ক্যালকুলেটর</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ===================== TAB 1: FORMULATOR ===================== -->
+<div class="tab-content active" id="tab-formulator">
+  <div class="grid-2">
+    <div>
+      <!-- Bird Selection -->
+      <div class="card">
+        <div class="card-header">🐣 পাখির প্রকার ও বয়স নির্বাচন</div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>পাখির প্রকার</label>
+            <select id="birdType" onchange="onBirdTypeChange()">
+              <option value="broiler">ব্রয়লার মুরগি (Broiler)</option>
+              <option value="layer_white">লেয়ার — সাদা ডিম (White Leghorn)</option>
+              <option value="layer_brown">লেয়ার — বাদামী ডিম (Brown Egg)</option>
+              <option value="pullet_white">পুলেট — সাদা ডিম (Growing)</option>
+              <option value="pullet_brown">পুলেট — বাদামী ডিম (Growing)</option>
+              <option value="turkey">টার্কি (Turkey)</option>
+              <option value="duck">হাঁস (White Pekin Duck)</option>
+              <option value="quail_japanese">কোয়েল — জাপানিজ (Coturnix)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>বয়স / উৎপাদন পর্যায়</label>
+            <select id="agePhase" onchange="onPhaseChange()">
+            </select>
+          </div>
+          <div class="form-group" id="feedIntakeRow" style="display:none">
+            <label>দৈনিক খাদ্য গ্রহণ (গ্রাম/মুরগি/দিন)</label>
+            <select id="feedIntakeLevel">
+              <option value="80">৮০ গ্রাম</option>
+              <option value="100" selected>১০০ গ্রাম</option>
+              <option value="120">১২০ গ্রাম</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>মোট রেশন (কেজি)</label>
+            <input type="number" id="totalRation" value="100" min="1" max="10000" step="1">
+          </div>
+          <div id="requirementSummary" class="sub-header">
+            পাখি নির্বাচন করুন এবং পুষ্টি চাহিদা দেখুন।
+          </div>
+        </div>
+      </div>
+
+      <!-- Ingredient Selection -->
+      <div class="card">
+        <div class="card-header">🌾 খাদ্য উপাদান নির্বাচন ও পরিমাণ</div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            💡 প্রতিটি উপাদানের পাশে টগল দিয়ে অন্তর্ভুক্ত/বাদ দিন। পরিমাণ শতাংশে দিন।
+          </div>
+          <div class="form-group">
+            <label>খাদ্য উপাদান যোগ করুন</label>
+            <div style="display:flex; gap:8px;">
+              <select id="ingredientSelect" style="flex:1;">
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="addIngredientToFormula()">➕ যোগ</button>
+            </div>
+          </div>
+          <div id="formulaIngredients">
+          </div>
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="calculateRation()">🧮 হিসাব করুন</button>
+            <button class="btn btn-accent" onclick="autoBalance()">⚖️ স্বয়ংক্রিয় ব্যালেন্স</button>
+            <button class="btn btn-danger btn-sm" onclick="clearFormula()">🗑️ মুছুন</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Results -->
+      <div class="result-panel">
+        <div class="result-header">
+          <span>📊 রেশন বিশ্লেষণ ফলাফল</span>
+          <button class="btn btn-sm" onclick="printResult()" style="background:rgba(255,255,255,0.2);color:white;">🖨️ প্রিন্ট</button>
+        </div>
+        <div class="result-body">
+          <div class="grid-4" id="statBoxes">
+            <div class="stat-box"><div class="val" id="statME">—</div><div class="lbl">ME (kcal/kg)</div></div>
+            <div class="stat-box"><div class="val" id="statCP">—</div><div class="lbl">ক্রুড প্রোটিন %</div></div>
+            <div class="stat-box"><div class="val" id="statLys">—</div><div class="lbl">লাইসিন %</div></div>
+            <div class="stat-box"><div class="val" id="statMet">—</div><div class="lbl">মেথিওনিন %</div></div>
+            <div class="stat-box"><div class="val" id="statCa">—</div><div class="lbl">ক্যালসিয়াম %</div></div>
+            <div class="stat-box"><div class="val" id="statP">—</div><div class="lbl">ফসফরাস %</div></div>
+            <div class="stat-box"><div class="val" id="statTotal">—</div><div class="lbl">মোট %</div></div>
+            <div class="stat-box"><div class="val" id="statCost">—</div><div class="lbl">খরচ (৳/কেজি)</div></div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div class="section-title">📈 পুষ্টি মিলানোর অবস্থা</div>
+            <div id="nutrientBars"></div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div class="section-title">📋 রেশন বিস্তারিত</div>
+            <div id="rationDetail"></div>
+          </div>
+
+          <div style="margin-top:16px;" id="alertsSection"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TAB 2: INGREDIENTS ===================== -->
+<div class="tab-content" id="tab-ingredients">
+  <div class="card">
+    <div class="card-header">🌾 খাদ্য উপাদান ডেটাবেজ (NRC 1994, Table 9-1 & 9-2)</div>
+    <div class="card-body">
+      <div class="alert alert-info">
+        💡 যেকোনো উপাদান সম্পাদনা করুন, বাদ দিন বা নতুন যোগ করুন। বাংলাদেশে প্রচলিত দামও যোগ করা হয়েছে।
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+        <input type="text" id="ingSearch" placeholder="🔍 খাদ্য উপাদান খুঁজুন..." style="flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.92rem;" oninput="filterIngredients()">
+        <select id="ingCategoryFilter" onchange="filterIngredients()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:0.9rem;">
+          <option value="">সব ক্যাটাগরি</option>
+          <option value="grain">শস্য/দানা</option>
+          <option value="protein">প্রোটিন উৎস</option>
+          <option value="mineral">খনিজ সম্পূরক</option>
+          <option value="fat">চর্বি/তেল</option>
+          <option value="byproduct">উপজাত</option>
+          <option value="synthetic">সিনথেটিক</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="openAddIngredientModal()">➕ নতুন উপাদান</button>
+      </div>
+
+      <div class="ingredient-table-wrapper">
+        <table class="ingredient-table" id="ingredientTable">
+          <thead>
+            <tr>
+              <th>অন্তর্ভুক্ত</th>
+              <th class="ingredient-name-col" style="text-align:left;">উপাদানের নাম</th>
+              <th>ME<br>(kcal/kg)</th>
+              <th>CP<br>(%)</th>
+              <th>লাইসিন<br>(%)</th>
+              <th>Met+Cys<br>(%)</th>
+              <th>Ca<br>(%)</th>
+              <th>P (NPP)<br>(%)</th>
+              <th>মূল্য<br>(৳/কেজি)</th>
+              <th>সর্বোচ্চ<br>(%)</th>
+              <th>কার্যক্রম</th>
+            </tr>
+          </thead>
+          <tbody id="ingredientTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TAB 3: REQUIREMENTS ===================== -->
+<div class="tab-content" id="tab-requirements">
+  <div class="card">
+    <div class="card-header">📊 NRC 1994 পুষ্টি চাহিদা — সম্পূর্ণ তালিকা</div>
+    <div class="card-body">
+      <div class="form-group" style="max-width:300px;">
+        <label>পাখির প্রকার নির্বাচন</label>
+        <select id="reqBirdType" onchange="showRequirementsTable()">
+          <option value="broiler">ব্রয়লার</option>
+          <option value="layer_white">লেয়ার (সাদা ডিম)</option>
+          <option value="layer_brown">লেয়ার (বাদামী ডিম)</option>
+          <option value="pullet_white">পুলেট (সাদা ডিম)</option>
+          <option value="turkey">টার্কি</option>
+          <option value="duck">হাঁস</option>
+          <option value="quail_japanese">জাপানিজ কোয়েল</option>
+        </select>
+      </div>
+      <div id="requirementsTableContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TAB 4: GROWTH ===================== -->
+<div class="tab-content" id="tab-growth">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">📈 ব্রয়লার শরীরের ওজন ও খাদ্য গ্রহণ (NRC 1994, Table 2-5)</div>
+      <div class="card-body">
+        <div class="sub-header">মূল্য: পুরুষ ও মেয়ে ব্রয়লার — ভালোভাবে সুষম খাদ্য (৩,২০০ kcal ME/kg)</div>
+        <table class="wg-table">
+          <thead><tr>
+            <th>বয়স (সপ্তাহ)</th>
+            <th>পুরুষ BW (গ্রাম)</th>
+            <th>মেয়ে BW (গ্রাম)</th>
+            <th>পুরুষ সাপ্তাহিক খাদ্য (গ্রাম)</th>
+            <th>মেয়ে সাপ্তাহিক খাদ্য (গ্রাম)</th>
+            <th>পুরুষ সঞ্চিত খাদ্য (গ্রাম)</th>
+            <th>মেয়ে সঞ্চিত খাদ্য (গ্রাম)</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>১</td><td>১৫২</td><td>১৪৪</td><td>১৩৫</td><td>১৩১</td><td>১৩৫</td><td>১৩১</td></tr>
+            <tr><td>২</td><td>৩৭৬</td><td>৩৪৪</td><td>২৯০</td><td>২৭৩</td><td>৪২৫</td><td>৪০৪</td></tr>
+            <tr><td>৩</td><td>৬৮৬</td><td>৬১৭</td><td>৪৮৭</td><td>৪৪৪</td><td>৯১২</td><td>৮৪৮</td></tr>
+            <tr><td>৪</td><td>১,০৮৫</td><td>৯৬৫</td><td>৭০৪</td><td>৬৪২</td><td>১,৬১৬</td><td>১,৪৯০</td></tr>
+            <tr><td>৫</td><td>১,৫৭৬</td><td>১,৩৪৪</td><td>৯৬০</td><td>৭৩৮</td><td>২,৫৭৬</td><td>২,২২৮</td></tr>
+            <tr><td>৬</td><td>২,০৮৮</td><td>১,৭৪১</td><td>১,১৪১</td><td>১,০০১</td><td>৩,৭১৭</td><td>৩,২২৯</td></tr>
+            <tr><td>৭</td><td>২,৫৯০</td><td>২,১৩৪</td><td>১,২৮১</td><td>১,০৮১</td><td>৪,৯৯৮</td><td>৪,৩১০</td></tr>
+            <tr><td>৮</td><td>৩,০৭৭</td><td>২,৫০৬</td><td>১,৪৩২</td><td>১,১৬৫</td><td>৬,৪৩০</td><td>৫,৪৭৫</td></tr>
+            <tr><td>৯</td><td>৩,৫৫১</td><td>২,৮৪২</td><td>১,৫৭৭</td><td>১,২৪৬</td><td>৮,০০৭</td><td>৬,৭২১</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">🐓 লেয়ার পুলেট শরীরের ওজন (NRC 1994, Table 2-2)</div>
+      <div class="card-body">
+        <table class="wg-table">
+          <thead><tr>
+            <th>বয়স (সপ্তাহ)</th>
+            <th>সাদা ডিম BW (গ্রাম)</th>
+            <th>সাদা — খাদ্য (গ্রাম/সপ্তাহ)</th>
+            <th>বাদামী ডিম BW (গ্রাম)</th>
+            <th>বাদামী — খাদ্য (গ্রাম/সপ্তাহ)</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>০</td><td>৩৫</td><td>৫০</td><td>৩৭</td><td>৭০</td></tr>
+            <tr><td>২</td><td>১০০</td><td>১৪০</td><td>১২০</td><td>১৬০</td></tr>
+            <tr><td>৪</td><td>২৬০</td><td>২৬০</td><td>৩২৫</td><td>২৮০</td></tr>
+            <tr><td>৬</td><td>৪৫০</td><td>৩৪০</td><td>৫০০</td><td>৩৫০</td></tr>
+            <tr><td>৮</td><td>৬৬০</td><td>৩৬০</td><td>৭৫০</td><td>৩৮০</td></tr>
+            <tr><td>১০</td><td>৭৫০</td><td>৩৮০</td><td>৯০০</td><td>৪০০</td></tr>
+            <tr><td>১২</td><td>৯৮০</td><td>৪০০</td><td>১,১০০</td><td>৪২০</td></tr>
+            <tr><td>১৪</td><td>১,১০০</td><td>৪২০</td><td>১,২৪০</td><td>৪৫০</td></tr>
+            <tr><td>১৬</td><td>১,২২০</td><td>৪৩০</td><td>১,৩৮০</td><td>৪৭০</td></tr>
+            <tr><td>১৮</td><td>১,৩৭৫</td><td>৪৫০</td><td>১,৫০০</td><td>৫০০</td></tr>
+            <tr><td>২০</td><td>১,৪৭৫</td><td>৫০০</td><td>১,৬০০</td><td>৫৫০</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">⚡ লেয়ারের দৈনিক ME চাহিদা (NRC 1994, Table 2-4)</div>
+      <div class="card-body">
+        <div class="sub-header">তাপমাত্রা ২২°C, ডিমের ওজন ৬০ গ্রাম, শরীরের ওজন পরিবর্তন নেই</div>
+        <table class="wg-table">
+          <thead><tr>
+            <th>শরীরের ওজন (কেজি)</th>
+            <th>০% উৎপাদন</th><th>৫০%</th><th>৬০%</th><th>৭০%</th><th>৮০%</th><th>৯০%</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>১.০</td><td>১৩০</td><td>১৯২</td><td>২০৫</td><td>২১৭</td><td>২২৯</td><td>২৪২</td></tr>
+            <tr><td>১.৫</td><td>১৭৭</td><td>২৩৯</td><td>২৫১</td><td>২৬৪</td><td>২৭৬</td><td>২৮৯</td></tr>
+            <tr><td>২.০</td><td>২১৮</td><td>২৮০</td><td>২৯২</td><td>৩০৫</td><td>৩১৭</td><td>৩৩০</td></tr>
+            <tr><td>২.৫</td><td>২৫৯</td><td>৩২১</td><td>৩৩৩</td><td>৩৪৬</td><td>৩৫৮</td><td>৩৭১</td></tr>
+            <tr><td>৩.০</td><td>২৯৬</td><td>৩৫৮</td><td>৩৭০</td><td>৩৮৩</td><td>৩৯৫</td><td>৪০৮</td></tr>
+          </tbody>
+        </table>
+        <div class="alert alert-info" style="margin-top:12px;">
+          📐 সূত্র: ME/দিন = W⁰·⁷⁵ × (173 - 1.95T) + 5.5×δW + 2.07×EE<br>
+          <small>W = শরীরের ওজন (কেজি), T = তাপমাত্রা (°C), δW = ওজন পরিবর্তন (গ্রাম/দিন), EE = দৈনিক ডিমের ভর (গ্রাম)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">💧 পানি গ্রহণ — বয়স অনুযায়ী (NRC 1994, Table 1-1)</div>
+      <div class="card-body">
+        <div class="sub-header">তাপমাত্রা ২০-২৫°C</div>
+        <table class="wg-table">
+          <thead><tr>
+            <th>বয়স (সপ্তাহ)</th>
+            <th>ব্রয়লার (মিলি/সপ্তাহ)</th>
+            <th>সাদা লেয়ার (মিলি/সপ্তাহ)</th>
+            <th>বাদামী লেয়ার (মিলি/সপ্তাহ)</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>১</td><td>২২৫</td><td>২০০</td><td>২০০</td></tr>
+            <tr><td>২</td><td>৪৮০</td><td>৩০০</td><td>৪০০</td></tr>
+            <tr><td>৪</td><td>১,০০০</td><td>৫০০</td><td>৭০০</td></tr>
+            <tr><td>৬</td><td>১,৫০০</td><td>৭০০</td><td>৮০০</td></tr>
+            <tr><td>৮</td><td>২,০০০</td><td>৮০০</td><td>৯০০</td></tr>
+            <tr><td>১২</td><td>—</td><td>১,০০০</td><td>১,১০০</td></tr>
+            <tr><td>১৬</td><td>—</td><td>১,২০০</td><td>১,২০০</td></tr>
+            <tr><td>২০</td><td>—</td><td>১,৬০০</td><td>১,৫০০</td></tr>
+          </tbody>
+        </table>
+        <div class="alert alert-warning" style="margin-top:10px;">⚠️ ২১°C এর উপরে প্রতি ১°C তাপমাত্রা বৃদ্ধিতে ব্রয়লারে পানি গ্রহণ ~৭% বাড়ে।</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TAB 5: ENERGY CALC ===================== -->
+<div class="tab-content" id="tab-energy">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">⚡ লেয়ার মুরগির দৈনিক ME চাহিদা হিসাব</div>
+      <div class="card-body">
+        <div class="sub-header">NRC 1994 সূত্র: ME/দিন = W⁰·⁷⁵ × (173 − 1.95T) + 5.5δW + 2.07EE</div>
+        <div class="form-group">
+          <label>শরীরের ওজন W (কেজি)</label>
+          <div class="range-row">
+            <input type="range" id="eW" min="0.5" max="4" step="0.1" value="1.8" oninput="updateEnergyCalc()">
+            <span class="range-val" id="eWval">১.৮</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>তাপমাত্রা T (°C)</label>
+          <div class="range-row">
+            <input type="range" id="eT" min="10" max="40" step="1" value="22" oninput="updateEnergyCalc()">
+            <span class="range-val" id="eTval">২২</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>দৈনিক ওজন পরিবর্তন δW (গ্রাম/দিন)</label>
+          <div class="range-row">
+            <input type="range" id="edW" min="-10" max="20" step="0.5" value="0" oninput="updateEnergyCalc()">
+            <span class="range-val" id="edWval">০</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>উৎপাদন হার (%)</label>
+          <div class="range-row">
+            <input type="range" id="eEP" min="0" max="100" step="5" value="90" oninput="updateEnergyCalc()">
+            <span class="range-val" id="eEPval">৯০</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>ডিমের ওজন (গ্রাম)</label>
+          <div class="range-row">
+            <input type="range" id="eEW" min="40" max="75" step="1" value="60" oninput="updateEnergyCalc()">
+            <span class="range-val" id="eEWval">৬০</span>
+          </div>
+        </div>
+        <div id="energyResult" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">🌾 সর্গাম ME অনুমান (Gous et al., 1982)</div>
+      <div class="card-body">
+        <div class="sub-header">সূত্র: ME (kcal/kg) = 3,152 − 358 × (% ট্যানিক এসিড)</div>
+        <div class="form-group">
+          <label>ট্যানিক এসিড পরিমাণ (%)</label>
+          <div class="range-row">
+            <input type="range" id="sTannin" min="0" max="5" step="0.1" value="0.5" oninput="updateSorghumCalc()">
+            <span class="range-val" id="sTanninVal">০.৫</span>
+          </div>
+        </div>
+        <div id="sorghumResult" style="margin-top:12px;"></div>
+
+        <div style="margin-top:24px;">
+          <div class="section-title">📐 পুষ্টি অনুপাত ক্যালকুলেটর</div>
+          <div class="form-group">
+            <label>প্রোটিন (%)</label>
+            <input type="number" id="rCP" value="21" step="0.1" min="0" oninput="updateRatioCalc()">
+          </div>
+          <div class="form-group">
+            <label>ME (kcal/kg)</label>
+            <input type="number" id="rME" value="3000" step="10" min="0" oninput="updateRatioCalc()">
+          </div>
+          <div id="ratioResult" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<!-- FOOTER / DEVELOPER SECTION -->
+<div class="footer" style="padding:0;">
+  <!-- Reference bar -->
+  <div style="background:#0a2e18; padding:12px 24px; font-size:0.82rem; color:rgba(255,255,255,0.65); text-align:center; letter-spacing:0.3px;">
+    📚 তথ্যসূত্র: <em>Nutrient Requirements of Poultry, Ninth Revised Edition, 1994 — National Research Council (NRC), National Academy Press, Washington D.C.</em>
+  </div>
+
+  <!-- Developer card -->
+  <div style="background:linear-gradient(135deg, #0f4526 0%, #1a6b3c 60%, #2a9d5c 100%); padding:32px 24px;">
+    <div style="max-width:900px; margin:0 auto; display:flex; align-items:center; gap:28px; flex-wrap:wrap; justify-content:center;">
+
+      <!-- Photo -->
+      <div style="flex-shrink:0;">
+        <div style="width:110px; height:110px; border-radius:50%; border:4px solid #f4a820; overflow:hidden; box-shadow:0 6px 24px rgba(0,0,0,0.4);">
+          <img
+            src="https://blogger.googleusercontent.com/img/a/AVvXsEhFTcOM-0RG6wkUEJ_FaBbbWzSagazOaPJ2Lyq-wipQGj-atW1UjFiJMzp23GbSmUMLgQx3-6ybGJ0MJMSDpD_R7wzgDOX4N3mCbrXqXWBv4vpfdEtCWwz9rIaqbbx4Vv3fIKukCyiuWBeOgoSsj1KoFG72bc8gBNF-FZeZyo09AyyehTIFHX7XCZciCRLj"
+            alt="MD Akramul Haque"
+            style="width:100%; height:100%; object-fit:cover;"
+            onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:40px;\'>👨‍🔬</div>';"
+          >
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div style="flex:1; min-width:240px; text-align:left;">
+        <div style="font-size:0.72rem; color:#f4a820; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:4px;">সফটওয়্যার প্রণেতা</div>
+        <div style="font-size:1.35rem; font-weight:700; color:#ffffff; line-height:1.2; font-family:'Noto Serif Bengali',serif;">MD Akramul Haque</div>
+        <div style="font-size:0.9rem; color:#f4a820; font-weight:600; margin:4px 0 2px;">BCS Livestock (Veterinary)</div>
+        <div style="font-size:0.83rem; color:rgba(255,255,255,0.8); line-height:1.6;">
+          লেকচারার, ইনস্টিটিউট অফ লাইভস্টক সায়েন্স এন্ড টেকনোলজি (ILST)<br>
+          গাইবান্ধা, বাংলাদেশ<br>
+          বিভাগ: প্রাণিসম্পদ অধিদপ্তর (DLS), বাংলাদেশ সরকার
+        </div>
+        <div style="margin-top:10px; display:flex; gap:14px; flex-wrap:wrap;">
+          <span style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:20px; padding:5px 14px; font-size:0.82rem; color:white;">📞 01701057143</span>
+          <span style="background:rgba(244,168,32,0.18); border:1px solid #f4a820; border-radius:20px; padding:5px 14px; font-size:0.82rem; color:#f4a820;">🐔 পোল্ট্রি পুষ্টি বিশেষজ্ঞ</span>
+        </div>
+      </div>
+
+      <!-- App info -->
+      <div style="flex-shrink:0; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:18px 22px; text-align:center; min-width:180px;">
+        <div style="font-size:2rem; margin-bottom:4px;">🐔</div>
+        <div style="font-size:0.8rem; color:#f4a820; font-weight:700; letter-spacing:0.5px;">NRC 1994</div>
+        <div style="font-size:0.75rem; color:rgba(255,255,255,0.7); margin-top:4px; line-height:1.5;">পোল্ট্রি রেশন<br>ফর্মুলেশন সিস্টেম</div>
+        <div style="margin-top:8px; font-size:0.7rem; color:rgba(255,255,255,0.4);">v1.0 · 2025</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom strip -->
+  <div style="background:#061a0d; padding:10px 24px; text-align:center; font-size:0.75rem; color:rgba(255,255,255,0.4);">
+    © 2025 MD Akramul Haque | ILST, Gaibandha | সর্বস্বত্ব সংরক্ষিত | শিক্ষামূলক ও পেশাদার ব্যবহারের জন্য প্রস্তুত
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// DATA — NRC 1994
+// =====================================================================
+
+// Nutrient Requirements Database (NRC 1994)
+const REQUIREMENTS = {
+  broiler: {
+    phases: ['০–৩ সপ্তাহ', '৩–৬ সপ্তাহ', '৬–৮ সপ্তাহ'],
+    data: [
+      // [ME, CP, Arg, GlySer, His, Ile, Leu, Lys, Met, MetCys, Phe, PheTyr, Pro, Thr, Trp, Val, LinAcid, Ca, ClPct, Mg, NPP, K, Na, Cu, I, Fe, Mn, Se, Zn, VitA, VitD3, VitE, VitK, B12, Biotin, Choline, Folacin, Niacin, PantoAcid, Pyridoxine, Riboflavin, Thiamin]
+      {ME:3200, CP:23.00, Arg:1.25, Lys:1.10, MetCys:0.90, Met:0.50, Thr:0.80, Trp:0.20, Ca:1.00, NPP:0.45, Na:0.20, P_total:0.72},
+      {ME:3200, CP:20.00, Arg:1.10, Lys:1.00, MetCys:0.72, Met:0.38, Thr:0.74, Trp:0.18, Ca:0.90, NPP:0.35, Na:0.15, P_total:0.65},
+      {ME:3200, CP:18.00, Arg:1.00, Lys:0.85, MetCys:0.60, Met:0.32, Thr:0.68, Trp:0.16, Ca:0.80, NPP:0.30, Na:0.12, P_total:0.56},
+    ]
+  },
+  layer_white: {
+    phases: ['৮০ গ্রাম/দিন', '১০০ গ্রাম/দিন', '১২০ গ্রাম/দিন'],
+    data: [
+      {ME:2900, CP:18.80, Arg:0.88, Lys:0.86, MetCys:0.73, Met:0.38, Thr:0.59, Trp:0.20, Ca:4.06, NPP:0.31, Na:0.19, P_total:0.50},
+      {ME:2900, CP:15.00, Arg:0.70, Lys:0.69, MetCys:0.58, Met:0.30, Thr:0.47, Trp:0.16, Ca:3.25, NPP:0.25, Na:0.15, P_total:0.40},
+      {ME:2900, CP:12.50, Arg:0.58, Lys:0.58, MetCys:0.48, Met:0.25, Thr:0.39, Trp:0.13, Ca:2.71, NPP:0.21, Na:0.13, P_total:0.33},
+    ]
+  },
+  layer_brown: {
+    phases: ['১১০ গ্রাম/দিন'],
+    data: [
+      {ME:2900, CP:16.50, Arg:0.77, Lys:0.76, MetCys:0.64, Met:0.33, Thr:0.52, Trp:0.18, Ca:3.60, NPP:0.28, Na:0.17, P_total:0.44},
+    ]
+  },
+  pullet_white: {
+    phases: ['০–৬ সপ্তাহ', '৬–১২ সপ্তাহ', '১২–১৮ সপ্তাহ', '১৮ সপ্তাহ–প্রথম ডিম'],
+    data: [
+      {ME:2850, CP:18.00, Arg:1.00, Lys:0.85, MetCys:0.62, Met:0.30, Thr:0.68, Trp:0.17, Ca:0.90, NPP:0.40, Na:0.15, P_total:0.65},
+      {ME:2850, CP:16.00, Arg:0.83, Lys:0.60, MetCys:0.52, Met:0.25, Thr:0.57, Trp:0.14, Ca:0.80, NPP:0.35, Na:0.15, P_total:0.56},
+      {ME:2900, CP:15.00, Arg:0.67, Lys:0.45, MetCys:0.42, Met:0.20, Thr:0.37, Trp:0.11, Ca:0.80, NPP:0.30, Na:0.15, P_total:0.48},
+      {ME:2800, CP:17.00, Arg:0.75, Lys:0.52, MetCys:0.47, Met:0.22, Thr:0.47, Trp:0.12, Ca:2.00, NPP:0.32, Na:0.15, P_total:0.52},
+    ]
+  },
+  pullet_brown: {
+    phases: ['০–৬ সপ্তাহ', '৬–১২ সপ্তাহ', '১২–১৮ সপ্তাহ', '১৮ সপ্তাহ–প্রথম ডিম'],
+    data: [
+      {ME:2800, CP:17.00, Arg:0.94, Lys:0.80, MetCys:0.59, Met:0.28, Thr:0.64, Trp:0.16, Ca:0.90, NPP:0.40, Na:0.15, P_total:0.62},
+      {ME:2850, CP:15.00, Arg:0.78, Lys:0.56, MetCys:0.49, Met:0.23, Thr:0.53, Trp:0.13, Ca:0.80, NPP:0.35, Na:0.15, P_total:0.53},
+      {ME:2900, CP:14.00, Arg:0.62, Lys:0.42, MetCys:0.39, Met:0.19, Thr:0.35, Trp:0.10, Ca:0.80, NPP:0.30, Na:0.15, P_total:0.45},
+      {ME:2850, CP:16.00, Arg:0.72, Lys:0.49, MetCys:0.44, Met:0.21, Thr:0.44, Trp:0.11, Ca:1.80, NPP:0.35, Na:0.15, P_total:0.48},
+    ]
+  },
+  turkey: {
+    phases: ['০–৪ সপ্তাহ', '৪–৮ সপ্তাহ', '৮–১২ সপ্তাহ', '১২–১৬ সপ্তাহ', '১৬–২০ সপ্তাহ', '২০+ সপ্তাহ'],
+    data: [
+      {ME:2800, CP:28.00, Arg:1.60, Lys:1.60, MetCys:1.05, Met:0.53, Thr:1.02, Trp:0.26, Ca:1.20, NPP:0.60, Na:0.17, P_total:0.85},
+      {ME:2900, CP:26.00, Arg:1.50, Lys:1.50, MetCys:0.95, Met:0.48, Thr:0.95, Trp:0.24, Ca:1.00, NPP:0.50, Na:0.15, P_total:0.75},
+      {ME:3000, CP:22.00, Arg:1.25, Lys:1.30, MetCys:0.80, Met:0.40, Thr:0.80, Trp:0.20, Ca:0.85, NPP:0.42, Na:0.12, P_total:0.65},
+      {ME:3000, CP:19.00, Arg:1.10, Lys:1.00, MetCys:0.65, Met:0.33, Thr:0.65, Trp:0.18, Ca:0.75, NPP:0.38, Na:0.12, P_total:0.55},
+      {ME:3100, CP:16.50, Arg:0.90, Lys:0.80, MetCys:0.55, Met:0.28, Thr:0.55, Trp:0.14, Ca:0.65, NPP:0.32, Na:0.12, P_total:0.48},
+      {ME:3200, CP:14.00, Arg:0.75, Lys:0.65, MetCys:0.45, Met:0.23, Thr:0.45, Trp:0.11, Ca:0.55, NPP:0.28, Na:0.10, P_total:0.40},
+    ]
+  },
+  duck: {
+    phases: ['০–২ সপ্তাহ', '২–৭ সপ্তাহ', 'প্রজনন'],
+    data: [
+      {ME:2900, CP:22.00, Arg:1.10, Lys:0.90, MetCys:0.70, Met:0.40, Thr:0.74, Trp:0.23, Ca:0.65, NPP:0.40, Na:0.15, P_total:0.62},
+      {ME:3000, CP:16.00, Arg:1.00, Lys:0.65, MetCys:0.55, Met:0.30, Thr:0.56, Trp:0.17, Ca:0.60, NPP:0.30, Na:0.15, P_total:0.50},
+      {ME:2900, CP:15.00, Arg:0.70, Lys:0.60, MetCys:0.55, Met:0.27, Thr:0.50, Trp:0.14, Ca:2.75, NPP:0.35, Na:0.15, P_total:0.45},
+    ]
+  },
+  quail_japanese: {
+    phases: ['০–৬ সপ্তাহ (বৃদ্ধি)', 'প্রজনন/ডিম উৎপাদন'],
+    data: [
+      {ME:2900, CP:24.00, Arg:1.25, Lys:1.30, MetCys:0.75, Met:0.50, Thr:1.02, Trp:0.22, Ca:0.80, NPP:0.30, Na:0.15, P_total:0.55},
+      {ME:2900, CP:20.00, Arg:1.26, Lys:1.00, MetCys:0.72, Met:0.45, Thr:0.74, Trp:0.19, Ca:2.50, NPP:0.35, Na:0.15, P_total:0.48},
+    ]
+  }
+};
+
+// Feed Ingredients Database (NRC 1994, Table 9-1 & 9-2 + Bangladesh market prices)
+let INGREDIENTS = [
+  // GRAINS
+  {id:1, name:'ভুট্টা (হলুদ)', nameEn:'Corn, yellow', category:'grain', ME:3370, CP:8.6, Arg:0.43, Lys:0.26, MetCys:0.36, Met:0.18, Thr:0.30, Trp:0.07, Ca:0.02, NPP:0.08, Na:0.01, Fat:3.80, Fiber:2.2, price:35, maxPct:70, included:true, custom:false},
+  {id:2, name:'গম', nameEn:'Wheat', category:'grain', ME:3070, CP:15.0, Arg:0.67, Lys:0.42, MetCys:0.54, Met:0.25, Thr:0.42, Trp:0.17, Ca:0.05, NPP:0.26, Na:0.01, Fat:1.9, Fiber:2.6, price:32, maxPct:40, included:true, custom:false},
+  {id:3, name:'ধান/চাল (চালের কুঁড়া)', nameEn:'Rice bran (full-fat)', category:'grain', ME:2770, CP:13.4, Arg:1.02, Lys:0.63, MetCys:0.45, Met:0.25, Thr:0.48, Trp:0.14, Ca:0.07, NPP:0.20, Na:0.01, Fat:16.0, Fiber:11.4, price:18, maxPct:20, included:true, custom:false},
+  {id:4, name:'ভাঙা চাল', nameEn:'Rice, broken', category:'grain', ME:3440, CP:7.8, Arg:0.55, Lys:0.28, MetCys:0.30, Met:0.16, Thr:0.26, Trp:0.08, Ca:0.03, NPP:0.09, Na:0.01, Fat:0.6, Fiber:0.8, price:28, maxPct:30, included:false, custom:false},
+  {id:5, name:'জোয়ার/সর্গাম', nameEn:'Grain sorghum (milo)', category:'grain', ME:3253, CP:10.0, Arg:0.35, Lys:0.24, MetCys:0.31, Met:0.17, Thr:0.30, Trp:0.10, Ca:0.04, NPP:0.15, Na:0.01, Fat:3.0, Fiber:2.5, price:28, maxPct:30, included:false, custom:false},
+  {id:6, name:'বার্লি', nameEn:'Barley', category:'grain', ME:2770, CP:11.5, Arg:0.55, Lys:0.40, MetCys:0.38, Met:0.17, Thr:0.37, Trp:0.14, Ca:0.06, NPP:0.22, Na:0.02, Fat:1.8, Fiber:5.5, price:30, maxPct:20, included:false, custom:false},
+  // PROTEIN SOURCES
+  {id:7, name:'সয়াবিন মিল (৪৪% CP)', nameEn:'Soybean meal, 44% CP', category:'protein', ME:2440, CP:44.0, Arg:3.20, Lys:2.80, MetCys:1.30, Met:0.62, Thr:1.76, Trp:0.62, Ca:0.30, NPP:0.27, Na:0.04, Fat:0.8, Fiber:6.5, price:60, maxPct:35, included:true, custom:false},
+  {id:8, name:'সয়াবিন মিল (৪৮% CP)', nameEn:'Soybean meal, 48% CP', category:'protein', ME:2540, CP:48.0, Arg:3.48, Lys:3.05, MetCys:1.42, Met:0.68, Thr:1.91, Trp:0.67, Ca:0.30, NPP:0.28, Na:0.04, Fat:0.5, Fiber:3.5, price:68, maxPct:35, included:true, custom:false},
+  {id:9, name:'ফিশ মিল (৬০% CP)', nameEn:'Fish meal, 60% CP', category:'protein', ME:2820, CP:60.0, Arg:3.60, Lys:4.57, MetCys:2.21, Met:1.66, Thr:2.64, Trp:0.71, Ca:5.50, NPP:2.90, Na:0.80, Fat:9.0, Fiber:0.5, price:120, maxPct:10, included:true, custom:false},
+  {id:10, name:'ফিশ মিল (৬৫% CP)', nameEn:'Fish meal, 65% CP', category:'protein', ME:3000, CP:65.0, Arg:3.81, Lys:4.90, MetCys:2.40, Met:1.80, Thr:2.80, Trp:0.75, Ca:4.00, NPP:2.20, Na:0.70, Fat:8.0, Fiber:0.3, price:130, maxPct:10, included:false, custom:false},
+  {id:11, name:'মিট মিল (৫৫% CP)', nameEn:'Meat meal, 55% CP', category:'protein', ME:2530, CP:55.0, Arg:3.50, Lys:3.20, MetCys:1.50, Met:0.77, Thr:1.90, Trp:0.35, Ca:8.50, NPP:4.20, Na:0.70, Fat:8.5, Fiber:2.5, price:70, maxPct:8, included:false, custom:false},
+  {id:12, name:'রেপসিড/ক্যানোলা মিল', nameEn:'Canola meal', category:'protein', ME:1860, CP:38.0, Arg:2.20, Lys:2.10, MetCys:1.65, Met:0.73, Thr:1.63, Trp:0.45, Ca:0.65, NPP:0.39, Na:0.09, Fat:3.5, Fiber:11.0, price:45, maxPct:10, included:false, custom:false},
+  {id:13, name:'তিলের খৈল', nameEn:'Sesame meal', category:'protein', ME:1900, CP:45.0, Arg:5.30, Lys:1.35, MetCys:2.00, Met:1.10, Thr:1.50, Trp:0.72, Ca:2.20, NPP:0.55, Na:0.02, Fat:5.5, Fiber:6.0, price:50, maxPct:8, included:false, custom:false},
+  {id:14, name:'তুলার বীজের খৈল', nameEn:'Cottonseed meal', category:'protein', ME:1870, CP:41.0, Arg:4.33, Lys:1.73, MetCys:1.43, Met:0.60, Thr:1.33, Trp:0.55, Ca:0.17, NPP:0.34, Na:0.05, Fat:1.5, Fiber:12.0, price:38, maxPct:10, included:false, custom:false},
+  {id:15, name:'রক্তের গুঁড়া', nameEn:'Blood meal', category:'protein', ME:2990, CP:88.0, Arg:3.50, Lys:7.20, MetCys:2.20, Met:1.00, Thr:3.30, Trp:1.10, Ca:0.30, NPP:0.25, Na:0.30, Fat:1.5, Fiber:1.0, price:90, maxPct:5, included:false, custom:false},
+  {id:16, name:'পালক গুঁড়া (হাইড্রোলাইজড)', nameEn:'Feather meal, hydrolyzed', category:'protein', ME:2260, CP:85.0, Arg:5.70, Lys:1.80, MetCys:4.50, Met:0.60, Thr:3.60, Trp:0.50, Ca:0.30, NPP:0.20, Na:0.70, Fat:3.0, Fiber:1.5, price:60, maxPct:5, included:false, custom:false},
+  // FAT SOURCES
+  {id:17, name:'পোল্ট্রি চর্বি', nameEn:'Poultry fat', category:'fat', ME:8790, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:0, NPP:0, Na:0, Fat:99.0, Fiber:0, price:80, maxPct:5, included:false, custom:false},
+  {id:18, name:'সয়াবিন তেল', nameEn:'Soybean oil', category:'fat', ME:8790, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:0, NPP:0, Na:0, Fat:99.0, Fiber:0, price:140, maxPct:5, included:false, custom:false},
+  // MINERALS
+  {id:19, name:'চুনাপাথর / লাইমস্টোন', nameEn:'Limestone', category:'mineral', ME:0, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:38.0, NPP:0, Na:0, Fat:0, Fiber:0, price:8, maxPct:12, included:true, custom:false},
+  {id:20, name:'ডাইক্যালসিয়াম ফসফেট (DCP)', nameEn:'Dicalcium phosphate', category:'mineral', ME:0, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:22.0, NPP:18.0, Na:0, Fat:0, Fiber:0, price:55, maxPct:3, included:true, custom:false},
+  {id:21, name:'মনোক্যালসিয়াম ফসফেট (MCP)', nameEn:'Monocalcium phosphate', category:'mineral', ME:0, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:15.0, NPP:22.0, Na:0, Fat:0, Fiber:0, price:70, maxPct:2, included:false, custom:false},
+  {id:22, name:'সাধারণ লবণ (NaCl)', nameEn:'Salt (NaCl)', category:'mineral', ME:0, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:0, NPP:0, Na:39.3, Fat:0, Fiber:0, price:15, maxPct:0.5, included:true, custom:false},
+  {id:23, name:'মিনারেল প্রি-মিক্স', nameEn:'Mineral premix', category:'mineral', ME:0, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:0, NPP:0, Na:0, Fat:0, Fiber:0, price:200, maxPct:0.5, included:true, custom:false},
+  {id:24, name:'ভিটামিন প্রি-মিক্স', nameEn:'Vitamin premix', category:'mineral', ME:0, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:0, NPP:0, Na:0, Fat:0, Fiber:0, price:250, maxPct:0.5, included:true, custom:false},
+  // SYNTHETIC
+  {id:25, name:'মেথিওনিন (DL-Met)', nameEn:'DL-Methionine', category:'synthetic', ME:4200, CP:0, Arg:0, Lys:0, MetCys:99.0, Met:99.0, Thr:0, Trp:0, Ca:0, NPP:0, Na:0, Fat:0, Fiber:0, price:350, maxPct:0.5, included:false, custom:false},
+  {id:26, name:'লাইসিন-HCl (L-Lys)', nameEn:'L-Lysine HCl', category:'synthetic', ME:4700, CP:0, Arg:0, Lys:78.8, MetCys:0, Met:0, Thr:0, Trp:0, Ca:0, NPP:0, Na:0, Fat:0, Fiber:0, price:280, maxPct:0.5, included:false, custom:false},
+  {id:27, name:'থ্রিওনিন (L-Thr)', nameEn:'L-Threonine', category:'synthetic', ME:4500, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:98.0, Trp:0, Ca:0, NPP:0, Na:0, Fat:0, Fiber:0, price:320, maxPct:0.3, included:false, custom:false},
+  // BY-PRODUCTS
+  {id:28, name:'গমের ভুষি (Wheat bran)', nameEn:'Wheat bran', category:'byproduct', ME:1490, CP:15.0, Arg:0.97, Lys:0.59, MetCys:0.47, Met:0.20, Thr:0.46, Trp:0.23, Ca:0.14, NPP:0.25, Na:0.04, Fat:3.9, Fiber:10.0, price:22, maxPct:15, included:false, custom:false},
+  {id:29, name:'কর্ন গ্লুটেন মিল (৬০%)', nameEn:'Corn gluten meal, 60% CP', category:'byproduct', ME:3720, CP:60.0, Arg:2.00, Lys:1.05, MetCys:2.47, Met:1.65, Thr:2.12, Trp:0.32, Ca:0.05, NPP:0.27, Na:0.02, Fat:2.5, Fiber:2.0, price:75, maxPct:10, included:false, custom:false},
+  {id:30, name:'সয়াবিন পূর্ণ বীজ', nameEn:'Soybeans, full fat', category:'protein', ME:3490, CP:37.0, Arg:2.78, Lys:2.42, MetCys:1.02, Met:0.54, Thr:1.59, Trp:0.53, Ca:0.25, NPP:0.19, Na:0.01, Fat:18.0, Fiber:5.3, price:55, maxPct:20, included:false, custom:false},
+];
+
+// Formula ingredients list
+let formulaIngredients = [];
+
+// =====================================================================
+// UI: Tab switching
+// =====================================================================
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = ['tab-formulator','tab-ingredients','tab-requirements','tab-growth','tab-energy'];
+  document.querySelectorAll('.nav-tab')[tabs.indexOf(id)].classList.add('active');
+  if(id==='tab-ingredients') renderIngredientTable();
+  if(id==='tab-requirements') showRequirementsTable();
+  if(id==='tab-energy') { updateEnergyCalc(); updateSorghumCalc(); updateRatioCalc(); }
+}
+
+// =====================================================================
+// Formulator
+// =====================================================================
+function onBirdTypeChange() {
+  const bt = document.getElementById('birdType').value;
+  const phSel = document.getElementById('agePhase');
+  phSel.innerHTML = '';
+  REQUIREMENTS[bt].phases.forEach((p,i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = p;
+    phSel.appendChild(o);
+  });
+  document.getElementById('feedIntakeRow').style.display = (bt==='layer_white'||bt==='layer_brown') ? 'block' : 'none';
+  onPhaseChange();
+}
+
+function onPhaseChange() {
+  const bt = document.getElementById('birdType').value;
+  const pi = parseInt(document.getElementById('agePhase').value)||0;
+  const req = REQUIREMENTS[bt].data[pi];
+  if(!req) return;
+  document.getElementById('requirementSummary').innerHTML = `
+    <strong>পুষ্টি চাহিদা:</strong> ME ${req.ME} kcal/kg | CP ${req.CP}% | Lys ${req.Lys}% | Met+Cys ${req.MetCys}% | Ca ${req.Ca}% | NPP ${req.NPP}%
+  `;
+  // populate ingredient dropdown
+  populateIngredientDropdown();
+  // if no formula, load default
+  if(formulaIngredients.length===0) loadDefaultFormula(bt);
+  calculateRation();
+}
+
+function populateIngredientDropdown() {
+  const sel = document.getElementById('ingredientSelect');
+  sel.innerHTML = '';
+  INGREDIENTS.forEach(ing => {
+    const o = document.createElement('option');
+    o.value = ing.id;
+    o.textContent = ing.name + ' (' + ing.nameEn + ')';
+    sel.appendChild(o);
+  });
+}
+
+function loadDefaultFormula(bt) {
+  formulaIngredients = [];
+  const defaults = {
+    broiler: [
+      {id:1, pct:55, locked:false},
+      {id:7, pct:28, locked:false},
+      {id:9, pct:5, locked:false},
+      {id:19, pct:1.0, locked:false},
+      {id:20, pct:1.5, locked:false},
+      {id:22, pct:0.3, locked:false},
+      {id:23, pct:0.25, locked:false},
+      {id:24, pct:0.25, locked:false},
+    ],
+    layer_white: [
+      {id:1, pct:55, locked:false},
+      {id:7, pct:20, locked:false},
+      {id:9, pct:3, locked:false},
+      {id:19, pct:8, locked:false},
+      {id:20, pct:1.5, locked:false},
+      {id:22, pct:0.3, locked:false},
+      {id:23, pct:0.25, locked:false},
+      {id:24, pct:0.25, locked:false},
+    ]
+  };
+  const d = defaults[bt] || defaults.broiler;
+  d.forEach(item => {
+    const ing = INGREDIENTS.find(i=>i.id===item.id);
+    if(ing) formulaIngredients.push({...item, name:ing.name});
+  });
+  renderFormulaIngredients();
+}
+
+function addIngredientToFormula() {
+  const id = parseInt(document.getElementById('ingredientSelect').value);
+  if(formulaIngredients.find(f=>f.id===id)) {
+    alert('এই উপাদান ইতিমধ্যে যোগ আছে!'); return;
+  }
+  const ing = INGREDIENTS.find(i=>i.id===id);
+  if(!ing) return;
+  formulaIngredients.push({id, name:ing.name, pct:5, locked:false});
+  renderFormulaIngredients();
+  calculateRation();
+}
+
+function renderFormulaIngredients() {
+  const div = document.getElementById('formulaIngredients');
+  if(formulaIngredients.length===0) {
+    div.innerHTML = '<div class="alert alert-info">কোনো উপাদান যোগ করা হয়নি।</div>';
+    return;
+  }
+  let html = `<div class="ingredient-table-wrapper"><table class="ingredient-table"><thead><tr>
+    <th>উপাদান</th><th>পরিমাণ (%)</th><th>বাংলাদেশী মূল্য<br>(৳/কেজি)</th><th>মুছুন</th>
+  </tr></thead><tbody>`;
+  formulaIngredients.forEach((fi,idx) => {
+    const ing = INGREDIENTS.find(i=>i.id===fi.id);
+    html += `<tr>
+      <td class="ingredient-name-col">${fi.name}</td>
+      <td><input type="number" value="${fi.pct}" min="0" max="100" step="0.1" style="width:80px;padding:5px 8px;border:1px solid #c8ddd0;border-radius:5px;text-align:center;" onchange="updateIngPct(${idx}, this.value)"></td>
+      <td><span style="color:var(--text-muted);font-size:0.82rem;">৳${ing?ing.price:0}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeIngredient(${idx})">✕</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  div.innerHTML = html;
+}
+
+function updateIngPct(idx, val) {
+  formulaIngredients[idx].pct = parseFloat(val)||0;
+}
+
+function removeIngredient(idx) {
+  formulaIngredients.splice(idx,1);
+  renderFormulaIngredients();
+  calculateRation();
+}
+
+function clearFormula() {
+  formulaIngredients = [];
+  renderFormulaIngredients();
+  clearResults();
+}
+
+function clearResults() {
+  ['statME','statCP','statLys','statMet','statCa','statP','statTotal','statCost'].forEach(id=>{
+    document.getElementById(id).textContent = '—';
+  });
+  document.getElementById('nutrientBars').innerHTML = '';
+  document.getElementById('rationDetail').innerHTML = '';
+  document.getElementById('alertsSection').innerHTML = '';
+}
+
+function bn(n) {
+  const d = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  return String(n).replace(/[0-9]/g, m=>d[+m]);
+}
+
+function toBN(num, dec=2) {
+  if(isNaN(num)) return '—';
+  return bn(num.toFixed(dec));
+}
+
+function calculateRation() {
+  if(formulaIngredients.length===0) { clearResults(); return; }
+  const totalPct = formulaIngredients.reduce((s,fi)=>s+fi.pct, 0);
+
+  let calc = {ME:0, CP:0, Arg:0, Lys:0, MetCys:0, Met:0, Thr:0, Trp:0, Ca:0, NPP:0, Na:0, Fat:0, cost:0};
+  let detail = [];
+
+  formulaIngredients.forEach(fi => {
+    const ing = INGREDIENTS.find(i=>i.id===fi.id);
+    if(!ing) return;
+    const frac = fi.pct / 100;
+    calc.ME += ing.ME * frac;
+    calc.CP += ing.CP * frac;
+    calc.Arg += ing.Arg * frac;
+    calc.Lys += ing.Lys * frac;
+    calc.MetCys += ing.MetCys * frac;
+    calc.Met += ing.Met * frac;
+    calc.Thr += ing.Thr * frac;
+    calc.Trp += ing.Trp * frac;
+    calc.Ca += ing.Ca * frac;
+    calc.NPP += ing.NPP * frac;
+    calc.Na += ing.Na * frac;
+    calc.Fat += (ing.Fat||0) * frac;
+    calc.cost += ing.price * frac;
+    detail.push({name:ing.name, pct:fi.pct, ing});
+  });
+
+  // Stat boxes
+  document.getElementById('statME').textContent = Math.round(calc.ME);
+  document.getElementById('statCP').textContent = calc.CP.toFixed(2)+'%';
+  document.getElementById('statLys').textContent = calc.Lys.toFixed(3)+'%';
+  document.getElementById('statMet').textContent = calc.Met.toFixed(3)+'%';
+  document.getElementById('statCa').textContent = calc.Ca.toFixed(2)+'%';
+  document.getElementById('statP').textContent = calc.NPP.toFixed(3)+'%';
+  document.getElementById('statTotal').textContent = totalPct.toFixed(2)+'%';
+  document.getElementById('statCost').textContent = calc.cost.toFixed(1);
+
+  // Color stat boxes
+  const totalEl = document.getElementById('statTotal').parentElement;
+  totalEl.className = 'stat-box' + (Math.abs(totalPct-100)<0.5 ? ' ' : (totalPct>100?' warn':' danger'));
+
+  // Get requirement
+  const bt = document.getElementById('birdType').value;
+  const pi = parseInt(document.getElementById('agePhase').value)||0;
+  const req = REQUIREMENTS[bt].data[pi];
+
+  // Nutrient bars
+  renderNutrientBars(calc, req);
+
+  // Detail table
+  renderDetailTable(detail, totalPct, calc.cost);
+
+  // Alerts
+  renderAlerts(calc, req, totalPct);
+}
+
+function renderNutrientBars(calc, req) {
+  if(!req) return;
+  const nutrients = [
+    {label:'ME (kcal/kg)', calc:calc.ME, req:req.ME, unit:'kcal/kg'},
+    {label:'ক্রুড প্রোটিন (CP)', calc:calc.CP, req:req.CP, unit:'%'},
+    {label:'লাইসিন', calc:calc.Lys, req:req.Lys, unit:'%'},
+    {label:'মেথিওনিন+সিস্টিন', calc:calc.MetCys, req:req.MetCys, unit:'%'},
+    {label:'মেথিওনিন', calc:calc.Met, req:req.Met, unit:'%'},
+    {label:'থ্রিওনিন', calc:calc.Thr, req:req.Thr, unit:'%'},
+    {label:'ক্যালসিয়াম', calc:calc.Ca, req:req.Ca, unit:'%'},
+    {label:'NPP ফসফরাস', calc:calc.NPP, req:req.NPP, unit:'%'},
+    {label:'সোডিয়াম', calc:calc.Na, req:req.Na||0.15, unit:'%'},
+  ];
+  let html = '';
+  nutrients.forEach(n => {
+    const r = n.req||0.001;
+    const ratio = Math.min((n.calc/r)*100, 150);
+    const ok = ratio>=95&&ratio<=125;
+    const low = ratio<95;
+    const cls = ok?'bar-ok':(low?'bar-low':'bar-excess');
+    const pct = Math.min(ratio, 100);
+    const status = ok ? '✅' : (low ? '⬇️' : '⬆️');
+    html += `<div class="nutrient-item">
+      <div class="nutrient-label">
+        <span>${status} ${n.label}</span>
+        <span>${n.calc.toFixed(3)} ${n.unit} / চাহিদা: ${n.req} ${n.unit}</span>
+      </div>
+      <div class="nutrient-bar-bg">
+        <div class="nutrient-bar-fill ${cls}" style="width:${pct}%"></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('nutrientBars').innerHTML = html;
+}
+
+function renderDetailTable(detail, totalPct, cost) {
+  const totalKg = parseFloat(document.getElementById('totalRation').value)||100;
+  let html = `<div class="ingredient-table-wrapper"><table class="ingredient-table">
+    <thead><tr>
+      <th class="ingredient-name-col" style="text-align:left;">উপাদান</th>
+      <th>% অনুপাত</th>
+      <th>পরিমাণ (${totalKg} কেজিতে)</th>
+      <th>ME অবদান</th>
+      <th>CP অবদান</th>
+      <th>Ca অবদান</th>
+      <th>খরচ</th>
+    </tr></thead><tbody>`;
+  detail.forEach(d => {
+    const kg = (d.pct/100 * totalKg).toFixed(2);
+    const meC = (d.ing.ME * d.pct/100).toFixed(0);
+    const cpC = (d.ing.CP * d.pct/100).toFixed(3);
+    const caC = (d.ing.Ca * d.pct/100).toFixed(4);
+    const cost = (d.ing.price * d.pct/100).toFixed(2);
+    html += `<tr>
+      <td class="ingredient-name-col">${d.name}</td>
+      <td>${d.pct.toFixed(2)}%</td>
+      <td>${kg} কেজি</td>
+      <td>${meC} kcal</td>
+      <td>${cpC}%</td>
+      <td>${caC}%</td>
+      <td>৳${cost}</td>
+    </tr>`;
+  });
+  html += `<tr style="background:#e8f5ee;font-weight:700;">
+    <td class="ingredient-name-col">মোট</td>
+    <td>${totalPct.toFixed(2)}%</td>
+    <td>${totalKg} কেজি</td>
+    <td>—</td><td>—</td><td>—</td>
+    <td>৳${cost.toFixed(2)}/কেজি</td>
+  </tr></tbody></table></div>`;
+  document.getElementById('rationDetail').innerHTML = html;
+}
+
+function renderAlerts(calc, req, totalPct) {
+  let html = '';
+  if(Math.abs(totalPct-100)>0.5) {
+    html += `<div class="alert alert-warning">⚠️ মোট অনুপাত ${totalPct.toFixed(2)}%। সঠিক রেশনের জন্য মোট ১০০% হওয়া দরকার।</div>`;
+  } else {
+    html += `<div class="alert alert-success">✅ মোট অনুপাত ${totalPct.toFixed(2)}% — সঠিক!</div>`;
+  }
+  if(req) {
+    if(calc.Lys < req.Lys*0.95) html += `<div class="alert alert-danger">❌ লাইসিন কম! প্রয়োজন ${req.Lys}%, পাওয়া ${calc.Lys.toFixed(3)}%। সয়াবিন মিল বা L-Lys যোগ করুন।</div>`;
+    if(calc.MetCys < req.MetCys*0.95) html += `<div class="alert alert-danger">❌ মেথিওনিন+সিস্টিন কম! প্রয়োজন ${req.MetCys}%, পাওয়া ${calc.MetCys.toFixed(3)}%। DL-Met যোগ করুন।</div>`;
+    if(calc.Ca < req.Ca*0.90) html += `<div class="alert alert-danger">❌ ক্যালসিয়াম কম! প্রয়োজন ${req.Ca}%, পাওয়া ${calc.Ca.toFixed(3)}%। চুনাপাথর বাড়ান।</div>`;
+    if(calc.NPP < req.NPP*0.90) html += `<div class="alert alert-danger">❌ NPP ফসফরাস কম! প্রয়োজন ${req.NPP}%, পাওয়া ${calc.NPP.toFixed(3)}%। DCP বাড়ান।</div>`;
+    if(calc.ME < req.ME*0.97) html += `<div class="alert alert-warning">⚠️ ME শক্তি কম! প্রয়োজন ${req.ME} kcal/kg, পাওয়া ${Math.round(calc.ME)} kcal/kg।</div>`;
+    if(calc.CP > req.CP*1.15) html += `<div class="alert alert-warning">⚠️ প্রোটিন বেশি! প্রয়োজন ${req.CP}%, পাওয়া ${calc.CP.toFixed(2)}%। খরচ বাড়তে পারে।</div>`;
+  }
+  document.getElementById('alertsSection').innerHTML = html;
+}
+
+function autoBalance() {
+  // Simple auto-adjust: normalize percentages to 100%, adjust the largest energy ingredient
+  if(formulaIngredients.length===0) return;
+  const totalPct = formulaIngredients.reduce((s,fi)=>s+fi.pct, 0);
+  if(totalPct===0) return;
+  // Find the grain ingredient (largest % item)
+  let grainIdx = -1, grainMax = 0;
+  formulaIngredients.forEach((fi,idx)=>{
+    const ing = INGREDIENTS.find(i=>i.id===fi.id);
+    if(ing && ing.category==='grain' && fi.pct>grainMax) { grainMax=fi.pct; grainIdx=idx; }
+  });
+  const diff = 100 - totalPct;
+  if(grainIdx>=0) {
+    formulaIngredients[grainIdx].pct = Math.max(0, formulaIngredients[grainIdx].pct + diff);
+  }
+  renderFormulaIngredients();
+  calculateRation();
+}
+
+function printResult() { window.print(); }
+
+// =====================================================================
+// INGREDIENT TABLE (Tab 2)
+// =====================================================================
+function renderIngredientTable() {
+  const search = (document.getElementById('ingSearch')||{value:''}).value.toLowerCase();
+  const cat = (document.getElementById('ingCategoryFilter')||{value:''}).value;
+  const filtered = INGREDIENTS.filter(ing => {
+    const matchSearch = ing.name.toLowerCase().includes(search) || ing.nameEn.toLowerCase().includes(search);
+    const matchCat = !cat || ing.category===cat;
+    return matchSearch && matchCat;
+  });
+
+  const tbody = document.getElementById('ingredientTableBody');
+  if(!tbody) return;
+  tbody.innerHTML = filtered.map(ing => `
+    <tr class="${ing.included?'':'excluded'}">
+      <td>
+        <label class="toggle">
+          <input type="checkbox" ${ing.included?'checked':''} onchange="toggleIngredient(${ing.id})">
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+      <td class="ingredient-name-col">
+        <div style="font-weight:600;">${ing.name}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);">${ing.nameEn}</div>
+      </td>
+      <td>${ing.ME}</td>
+      <td>${ing.CP}</td>
+      <td>${ing.Lys}</td>
+      <td>${ing.MetCys}</td>
+      <td>${ing.Ca}</td>
+      <td>${ing.NPP}</td>
+      <td>
+        <input type="number" value="${ing.price}" min="0" step="0.5" style="width:70px;padding:4px 8px;border:1px solid #c8ddd0;border-radius:5px;text-align:center;" onchange="updateIngPrice(${ing.id}, this.value)">
+      </td>
+      <td>
+        <input type="number" value="${ing.maxPct}" min="0" max="100" step="1" style="width:60px;padding:4px 8px;border:1px solid #c8ddd0;border-radius:5px;text-align:center;" onchange="updateIngMaxPct(${ing.id}, this.value)">
+      </td>
+      <td>
+        ${ing.custom ? `<button class="btn btn-danger btn-sm" onclick="deleteIngredient(${ing.id})">🗑️</button>` : '<span style="color:#bbb;font-size:0.75rem;">NRC</span>'}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterIngredients() { renderIngredientTable(); }
+
+function toggleIngredient(id) {
+  const ing = INGREDIENTS.find(i=>i.id===id);
+  if(ing) { ing.included = !ing.included; renderIngredientTable(); populateIngredientDropdown(); }
+}
+
+function updateIngPrice(id, val) {
+  const ing = INGREDIENTS.find(i=>i.id===id);
+  if(ing) { ing.price = parseFloat(val)||0; calculateRation(); }
+}
+
+function updateIngMaxPct(id, val) {
+  const ing = INGREDIENTS.find(i=>i.id===id);
+  if(ing) ing.maxPct = parseFloat(val)||0;
+}
+
+function deleteIngredient(id) {
+  const idx = INGREDIENTS.findIndex(i=>i.id===id);
+  if(idx>=0) {
+    INGREDIENTS.splice(idx,1);
+    formulaIngredients = formulaIngredients.filter(f=>f.id!==id);
+    renderIngredientTable();
+    renderFormulaIngredients();
+    calculateRation();
+  }
+}
+
+function openAddIngredientModal() {
+  const name = prompt('নতুন উপাদানের বাংলা নাম:');
+  if(!name) return;
+  const nameEn = prompt('ইংরেজি নাম (Optional):') || name;
+  const ME = parseFloat(prompt('ME (kcal/kg):')||0);
+  const CP = parseFloat(prompt('Crude Protein (%):')||0);
+  const Lys = parseFloat(prompt('Lysine (%):')||0);
+  const MetCys = parseFloat(prompt('Met+Cys (%):')||0);
+  const Ca = parseFloat(prompt('Calcium (%):')||0);
+  const NPP = parseFloat(prompt('NPP Phosphorus (%):')||0);
+  const price = parseFloat(prompt('মূল্য (৳/কেজি):')||0);
+  const maxId = Math.max(...INGREDIENTS.map(i=>i.id), 30) + 1;
+  INGREDIENTS.push({
+    id:maxId, name, nameEn, category:'protein',
+    ME, CP, Arg:0, Lys, MetCys, Met:MetCys*0.6, Thr:0, Trp:0,
+    Ca, NPP, Na:0, Fat:0, Fiber:0, price, maxPct:20, included:true, custom:true
+  });
+  renderIngredientTable();
+  populateIngredientDropdown();
+}
+
+// =====================================================================
+// REQUIREMENTS TABLE (Tab 3)
+// =====================================================================
+function showRequirementsTable() {
+  const bt = document.getElementById('reqBirdType').value;
+  const req = REQUIREMENTS[bt];
+  if(!req) return;
+
+  const nutrientRows = [
+    {key:'ME', label:'মেটাবোলাইজেবল এনার্জি (kcal/kg)', unit:'kcal/kg'},
+    {key:'CP', label:'ক্রুড প্রোটিন (CP)', unit:'%'},
+    {key:'Arg', label:'আর্জিনিন', unit:'%'},
+    {key:'Lys', label:'লাইসিন', unit:'%'},
+    {key:'MetCys', label:'মেথিওনিন+সিস্টিন', unit:'%'},
+    {key:'Met', label:'মেথিওনিন (একক)', unit:'%'},
+    {key:'Thr', label:'থ্রিওনিন', unit:'%'},
+    {key:'Trp', label:'ট্রিপটোফ্যান', unit:'%'},
+    {key:'Ca', label:'ক্যালসিয়াম', unit:'%'},
+    {key:'NPP', label:'নন-ফাইটেট ফসফরাস', unit:'%'},
+    {key:'Na', label:'সোডিয়াম', unit:'%'},
+  ];
+
+  const birdNames = {
+    broiler:'ব্রয়লার', layer_white:'লেয়ার (সাদা)', layer_brown:'লেয়ার (বাদামী)',
+    pullet_white:'পুলেট (সাদা)', turkey:'টার্কি', duck:'হাঁস', quail_japanese:'জাপানিজ কোয়েল'
+  };
+
+  let html = `<div class="alert alert-info">📚 তথ্যসূত্র: NRC (1994) Nutrient Requirements of Poultry, 9th Revised Edition. পাখি: <strong>${birdNames[bt]||bt}</strong></div>`;
+  html += `<div class="ingredient-table-wrapper"><table class="req-table">
+    <thead><tr>
+      <th style="text-align:left;">পুষ্টি উপাদান</th>
+      <th>একক</th>`;
+  req.phases.forEach(p => { html += `<th>${p}</th>`; });
+  html += `</tr></thead><tbody>`;
+  nutrientRows.forEach(n => {
+    html += `<tr><td style="text-align:left;font-weight:500;">${n.label}</td><td style="color:var(--text-muted);">${n.unit}</td>`;
+    req.data.forEach(d => {
+      const val = d[n.key];
+      html += `<td>${val!==undefined ? val : '—'}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div>`;
+  document.getElementById('requirementsTableContainer').innerHTML = html;
+}
+
+// =====================================================================
+// ENERGY CALCULATOR (Tab 5)
+// =====================================================================
+function updateEnergyCalc() {
+  const W = parseFloat(document.getElementById('eW').value);
+  const T = parseFloat(document.getElementById('eT').value);
+  const dW = parseFloat(document.getElementById('edW').value);
+  const EP = parseFloat(document.getElementById('eEP').value);
+  const EW = parseFloat(document.getElementById('eEW').value);
+
+  document.getElementById('eWval').textContent = W.toFixed(1);
+  document.getElementById('eTval').textContent = T;
+  document.getElementById('edWval').textContent = dW;
+  document.getElementById('eEPval').textContent = EP;
+  document.getElementById('eEWval').textContent = EW;
+
+  const EE = (EP/100) * EW; // daily egg mass (g)
+  const ME = Math.pow(W, 0.75) * (173 - 1.95*T) + 5.5*dW + 2.07*EE;
+  const MEatME2900 = (ME / 2900 * 1000).toFixed(1); // approx feed g/day at 2900 kcal/kg
+  const MEatME3000 = (ME / 3000 * 1000).toFixed(1);
+
+  document.getElementById('energyResult').innerHTML = `
+    <div class="grid-3" style="gap:12px;">
+      <div class="stat-box">
+        <div class="val">${Math.round(ME)}</div>
+        <div class="lbl">দৈনিক ME চাহিদা (kcal/দিন)</div>
+      </div>
+      <div class="stat-box">
+        <div class="val">${MEatME2900}</div>
+        <div class="lbl">আনুমানিক খাদ্য গ্রহণ (গ্রাম/দিন)<br>@ 2900 kcal/kg খাদ্যে</div>
+      </div>
+      <div class="stat-box">
+        <div class="val">${MEatME3000}</div>
+        <div class="lbl">আনুমানিক খাদ্য গ্রহণ (গ্রাম/দিন)<br>@ 3000 kcal/kg খাদ্যে</div>
+      </div>
+    </div>
+    <div class="alert alert-info" style="margin-top:12px;font-size:0.82rem;">
+      📐 সূত্র: ME = W<sup>0.75</sup> × (173 − 1.95×${T}) + 5.5×${dW} + 2.07×${EE.toFixed(1)}<br>
+      = ${W.toFixed(2)}<sup>0.75</sup> × ${(173-1.95*T).toFixed(1)} + ${(5.5*dW).toFixed(1)} + ${(2.07*EE).toFixed(1)} = <strong>${Math.round(ME)} kcal/মুরগি/দিন</strong>
+    </div>
+  `;
+}
+
+function updateSorghumCalc() {
+  const t = parseFloat(document.getElementById('sTannin').value);
+  document.getElementById('sTanninVal').textContent = t.toFixed(1);
+  const me = 3152 - 358 * t;
+  document.getElementById('sorghumResult').innerHTML = `
+    <div class="stat-box">
+      <div class="val">${Math.round(me)}</div>
+      <div class="lbl">আনুমানিক ME (kcal/kg DM)<br>ট্যানিন ${t}% হলে</div>
+    </div>
+    <div style="margin-top:8px;font-size:0.8rem;color:var(--text-muted);">তথ্যসূত্র: Gous et al., 1982 (NRC 1994 উদ্ধৃত)</div>
+  `;
+}
+
+function updateRatioCalc() {
+  const cp = parseFloat(document.getElementById('rCP').value)||0;
+  const me = parseFloat(document.getElementById('rME').value)||1;
+  const ratio = (cp * 10 / me * 1000).toFixed(2);
+  const gPerMcal = (cp / (me/1000)).toFixed(1);
+  document.getElementById('ratioResult').innerHTML = `
+    <div class="sub-header">
+      প্রোটিন:এনার্জি অনুপাত = ${gPerMcal} গ্রাম CP / Mcal ME<br>
+      <small>ব্রয়লার সাধারণত ৭০–৮০ গ্রাম/Mcal, লেয়ার ৪৫–৬০ গ্রাম/Mcal এর মধ্যে থাকে।</small>
+    </div>
+  `;
+}
+
+// =====================================================================
+// INIT
+// =====================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  onBirdTypeChange();
+  renderIngredientTable();
+  showRequirementsTable();
+  updateEnergyCalc();
+  updateSorghumCalc();
+  updateRatioCalc();
+});
+</script>
+</body>
+</html>
